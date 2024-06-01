@@ -30,26 +30,42 @@ local function fn_wrapper(order)
 	end
 end
 
+local cmd_group = augroup("MetalPipe", { clear = true })
+
+local function create_sound(events, order_name)
+	autocmd(events, {
+		group = cmd_group,
+		pattern = { "*" },
+		callback = fn_wrapper(g["metal_pipe_"..order_name]),
+	})
+end
+
+create_sound({"BufLeave", "CmdlineLeave"}, "on_buf_focus_change")
+create_sound({"BufWrite"}, "on_buffer_write")
+create_sound({"CursorMoved", "CursorMovedI", "CmdlineChanged"}, "on_cursor_movement")
+
+--[[
 autocmd({ 'BufLeave', 'CmdlineLeave' }, {
-  group = augroup('MetalPipeSoundOnBufferFocusChange', { clear = true }),
+  group = cmd_group,
   pattern = { '*' },
   callback = fn_wrapper(g.metal_pipe_on_buf_focus_change),
   desc = 'Play metal pipe sound on buffer focus changes',
 })
 
 autocmd({ 'BufWrite' }, {
-  group = augroup('MetalPipeSoundOnBufferWrite', { clear = true }),
+  group = cmd_group,
   pattern = { '*' },
   callback = fn_wrapper(g.metal_pipe_on_buffer_write),
   desc = 'Play metal pipe sound on buffer writes',
 })
 
 autocmd({ 'CursorMoved', 'CursorMovedI', 'CmdlineChanged' }, {
-  group = augroup('MetalPipeSoundOnCursorMovements', { clear = true }),
+  group = cmd_group,
   pattern = { '*' },
   callback = fn_wrapper(g.metal_pipe_on_cursor_movement),
   desc = 'Play metal pipe sound on cursor movements',
 })
+--]]
 
 ----------------------- PUBLIC MODULE API
 function M.toggle(order)
