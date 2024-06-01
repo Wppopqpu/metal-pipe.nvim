@@ -9,6 +9,7 @@ local defaults = {
   on_buf_focus_change = true,
   on_buffer_write = true,
   on_cursor_movement = false,
+  player = "auto",
 }
 
 local function filter_user_options_to_contain_only_valid_keys(user_options)

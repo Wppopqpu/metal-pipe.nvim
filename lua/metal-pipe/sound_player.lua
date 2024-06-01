@@ -1,5 +1,5 @@
 ------------------ PRIVATE IMPLEMENTATION
-
+--[[
 -- For a given path to a sound file, returns the command to play the sound on Mac.
 ---@param path string # Path to a sound file.
 ---@return string command # A MacOs command to play the sound file with for the given path.
@@ -20,6 +20,18 @@ end
 local function get_sound_playing_cmd_for_windows(path)
   return "powershell -c (New-Object Media.SoundPlayer '" .. path .. "').PlaySync();"
 end
+--]]
+local players = {
+	afplay = function(path)
+		return "afplay "..path
+	end,
+	aplay = function(path)
+		return "aplay "..path
+	end,
+	pwsh = function(path)
+		return "powershell -c (New-Object Media.SoundPlayer '" .. path .. "').PlaySync();"
+	end,
+}
 
 -- Determines the correct function to be used to compose the sound-playing command
 -- for the given OS.
@@ -28,14 +40,14 @@ local function get_command_composing_fn()
   local operating_system = jit.os
 
   if operating_system == "OSX" then
-    return get_sound_playing_cmd_for_mac
+    return players.afplay()
   elseif operating_system == "Linux" then
-    return get_sound_playing_cmd_for_linux
+    return players.aplay()
   elseif operating_system == "Windows" then
-    return get_sound_playing_cmd_for_windows
+    return players.pwsh()
   end
 
-  error("OS couldn't be determined!")
+  error("[metal-pipe.nvim]:player couldn't be determined!")
 end
 
 ---@class SoundPlayer
